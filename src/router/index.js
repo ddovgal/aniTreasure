@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
+import Explore from '@/components/Explore'
+import AddPicture from '@/components/AddPicture'
+import Search from '@/components/Search'
 
 Vue.use(Router)
 
@@ -9,8 +11,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: Hello
+      name: 'Explore',
+      component: Explore
+    },
+    {
+      path: '/add',
+      name: 'AddPicture',
+      component: AddPicture
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: Search
     }
   ]
 })
