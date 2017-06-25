@@ -1,68 +1,80 @@
 <template>
 <div id="addPicture">
-  <md-layout md-gutter>
 
-    <span class="md-display-4">Add your picture treasures</span>
-    <span class="md-display-3">So anyone could enjoy it</span>
+  <v-container>
+    <div class="display-3">Add your picture treasures</div>
+    <div class="display-1">So anyone could enjoy it</div>
 
-    <md-input-container>
-      <label>Choose pictures</label>
-      <md-file v-model="imageNames" multiple accept="image/*" @selected="generatePreview"></md-file>
-    </md-input-container>
+    <upload-file label="Choose pictures" multiple accept="image/*" @selected="generatePreview" />
 
-    <div class="card-holder">
-      <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex="33" v-for="image in images" :key="image">
-        <md-card>
-          <md-card-media-cover md-text-scrim>
-            <md-card-media>
-              <img :src="image">
-            </md-card-media>
-          </md-card-media-cover>
-        </md-card>
-      </md-layout>
-    </div>
+    <!--  -->
 
-  </md-layout>
+  </v-container>
+
+  <v-layout wrap>
+    <v-flex xs12 sm6 md4 lg3 xl2 v-for="index in imageCounter" :key="imageNames[index - 1]">
+
+      <div class="portrait" v-if="imageDatas[index - 1]">
+        <v-card :img="imageDatas[index - 1]" height="300px">
+          <v-card-row actions class="white--text pl-3 pt-3 pb-3">{{ imageNames[index - 1] }}</v-card-row>
+        </v-card>
+      </div>
+
+      <div class="progress-circular-wrapper" v-else>
+        <v-progress-circular indeterminate :size="150" :width="3" class="primary--text"/>
+      </div>
+
+    </v-flex>
+  </v-layout>
+
 </div>
 </template>
 
 <script>
+import UploadFile from './inner/UploadFile'
+import imageCompressMixin from '../imageCompressMixin'
+
 export default {
   name: 'addPicture',
+  components: {
+    UploadFile
+  },
+  mixins: [imageCompressMixin],
   data () {
     return {
-      imageNames: '',
-      images: []
+      imageNames: [],
+      imageDatas: [],
+      imageCounter: 0
     }
   },
   methods: {
     generatePreview (files) {
-      Array.from(files).forEach((item) => {
-        var reader = new FileReader()
-        reader.onload = (e) => this.images.push(e.target.result)
-        reader.readAsDataURL(item)
-      })
+      this.imageCounter = files.length
+      const compressed = this.processImages(files)
+      this.imageNames = compressed.imageNames
+      this.imageDatas = compressed.resizedImages
     }
   }
 }
 </script>
 
-<style lang="scss">
+<style scoped>
+.flex {
+  margin-bottom: 16px
+}
 
-.page-content {
-    min-height: 100%;
-    max-height: 100%;
-    flex: 1;
-    display: flex;
-    flex-flow: column
-  }
-.card-holder {
-    .md-card {
-      width: 100%;
-      max-width: 320px;
-      margin: 0 4px 16px;
-      display: inline-block;
-      vertical-align: top;
-    }
-  }
+.card__row--actions {
+  background: rgba(0, 0, 0, 0.25)
+}
+
+.progress-circular-wrapper {
+  height: 300px;
+  position: relative;
+  text-align: center;
+}
+
+.progress-circular {
+  top: 50%;
+  transform: translateY(-50%);
+}
 </style>

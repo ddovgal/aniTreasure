@@ -1,15 +1,19 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.css'
+import firebase from 'firebase'
+import Vuetify from 'vuetify'
 
-Vue.use(VueMaterial)
+import 'vuetify/dist/vuetify.min.css'
+
+Vue.use(Vuetify)
 
 Vue.config.productionTip = false
+Object.defineProperty(Vue.prototype, '$firebase', { value: firebase })
 
 /* eslint-disable no-new */
-new Vue({
+/* eslint-disable no-unused-vars */
+window.vueApp = new Vue({
   el: '#app',
   router,
   template: '<App/>',

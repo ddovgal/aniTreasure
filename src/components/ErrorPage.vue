@@ -1,12 +1,12 @@
 <template>
   <div>
-    Search
+    ErrorPage
   </div>
 </template>
 
 <script>
 export default {
-  name: 'searching',
+  name: 'errorPage',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'

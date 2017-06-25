@@ -1,6 +1,6 @@
 <template>
   <div>
-    1111111
+    Explore
   </div>
 </template>
 
