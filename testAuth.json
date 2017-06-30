@@ -1,0 +1,28 @@
+{
+  "uid": "neW6FAax0XdYpCkKaNzhcoRK0cS2",
+  "displayName": null,
+  "photoURL": null,
+  "email": "errorer.404@gmail.com",
+  "emailVerified": true,
+  "phoneNumber": null,
+  "isAnonymous": false,
+  "providerData": [
+    {
+      "uid": "errorer.404@gmail.com",
+      "displayName": null,
+      "photoURL": null,
+      "email": "errorer.404@gmail.com",
+      "providerId": "password"
+    }
+  ],
+  "apiKey": "AIzaSyDWErXWJVpIJ-g8fVdZhqO7NHSk9GbxTyg",
+  "appName": "[DEFAULT]",
+  "authDomain": "firetest-826b6.firebaseapp.com",
+  "stsTokenManager": {
+    "apiKey": "AIzaSyDWErXWJVpIJ-g8fVdZhqO7NHSk9GbxTyg",
+    "refreshToken": "ACXxpGGMD82Yf5ItHL4WxZiUGRAn5LTrQoe7z0z4b5A2MI4LquSqIVGfb1x8f-4CO_lb8Q5qOr7OL8efNCZUEvrzAO-LEehsdK3Kc1R8UHyiDtRHd1kTsy6MnO54y8w3sIQRKDegVEaVLnMS1UKNWsUZHJA5srzYsydoz9XAFGBjxYqCyDrqLcoHaI7kqOxU_YJClusjSbTu0R66Tr_GI2w_YgkT1gsm4A",
+    "accessToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUwOTQ5NTk0NDUyOGNlMWE2YjhjZDljNzVlMTA1YjkxOGY1NjMwYmQifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZmlyZXRlc3QtODI2YjYiLCJhdWQiOiJmaXJldGVzdC04MjZiNiIsImF1dGhfdGltZSI6MTQ5ODI0MDUyMSwidXNlcl9pZCI6Im5lVzZGQWF4MFhkWXBDa0thTnpoY29SSzBjUzIiLCJzdWIiOiJuZVc2RkFheDBYZFlwQ2tLYU56aGNvUkswY1MyIiwiaWF0IjoxNDk4NTA5OTY2LCJleHAiOjE0OTg1MTM1NjYsImVtYWlsIjoiZXJyb3Jlci40MDRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiZXJyb3Jlci40MDRAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.pC7M72tTiXMa0sPa_399K9FuwZaZcL8nzo1H8yWQywdYuLnhzf8UC4QHIXQX_Yek7eBO03LqHO1WsZtYfxwzogZuKXSkZI-8BK8WtkYi-UN6PPUvliyJEjGAKpiUFyET1nqWha9jpioudgtVRq8bYE5GcitIKXJe83E2g0Lcxtv61kQjRPurlLAHI1FqE0CTqHXZTGwUyzh2Isi789JWmN5_IgAqscTRGc4xFSHcczF3s9chWmF1dPuobSbJzTyAmAU8iKbCR_t4uQf1y4bDrZV9lRhzk-IMZZmJNI7DAXL8iB3_4bCsx5MGUZOG4D4b8BJOGZwcfbeoqXvSkjr-KQ",
+    "expirationTime": 1498513566041
+  },
+  "redirectEventId": null
+}

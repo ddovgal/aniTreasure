@@ -4,11 +4,19 @@ import router from './router'
 import firebase from 'firebase'
 import Vuetify from 'vuetify'
 
-import 'vuetify/dist/vuetify.min.css'
-
 Vue.use(Vuetify)
 
 Vue.config.productionTip = false
+// Initialize Firebase
+const config = {
+  apiKey: 'AIzaSyDaGX_xuvvh0LeqNNLcWgmWmYitr0XwN3Q',
+  authDomain: 'anitreasure-fa2ca.firebaseapp.com',
+  databaseURL: 'https://anitreasure-fa2ca.firebaseio.com',
+  projectId: 'anitreasure-fa2ca',
+  storageBucket: 'anitreasure-fa2ca.appspot.com',
+  messagingSenderId: '1066091742753'
+}
+firebase.initializeApp(config)
 Object.defineProperty(Vue.prototype, '$firebase', { value: firebase })
 
 /* eslint-disable no-new */

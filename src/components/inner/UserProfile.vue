@@ -1,41 +1,33 @@
 <template>
   <v-card>
-    <v-card-row>
-      <v-layout wrap>
+    <v-layout wrap>
 
-        <v-flex xs sm6>
-          <img src="http://images.sciencetimes.com/data/images/full/2142/dark-matter.jpg"/>
-        </v-flex>
+      <v-flex xs sm6 style="position: relative;">
+        <img :src="currentUser.photoUrl || 'static/noUser.png'"
+        @mouseover="isAvatarHoverShowed = true"
+        @mouseout="isAvatarHoverShowed = false"/>
+        <transition name="fade" mode="out-in" appear>
+          <div v-show="isAvatarHoverShowed" id="avatarHover">
+            <div class="white--text">Change picture</div>
+          </div>
+        </transition>
+      </v-flex>
 
-        <v-flex xs sm6>
-          <v-layout column-sm wrap>
-            <v-flex xs12>
-              <v-card-title>
-                <div class="display-2 hidden-xs-only">User Profile</div>
-                <div class="hidden-sm-and-up">User Profile</div>
-              </v-card-title>
-            </v-flex>
-            <v-flex xs12>
-              <v-card-text>
-                <v-text-field label="Email" required></v-text-field>
-                <v-text-field label="Password" type="password" required></v-text-field>
-                <v-text-field label="Nickname" required></v-text-field>
-              </v-card-text>
-            </v-flex>
-          </v-layout>
-        </v-flex>
+      <v-flex xs sm6>
+        <v-card-title>
+          <div class="display-1 hidden-xs-only">Profile</div>
+          <div class="hidden-sm-and-up">Profile</div>
+        </v-card-title>
 
-        <v-flex xs>
-          <v-card-text>
-            <v-text-field label="Legal middle name" hint="example of helper text only on focus"></v-text-field>
-            <v-text-field label="Legal last name" hint="example of persistent helper text" persistent-hint required></v-text-field>
-            <v-select label="Age" required :items="['0-17', '18-29', '30-54', '54+']"></v-select>
-            <small>*indicates required field</small>
-          </v-card-text>
-        </v-flex>
+        <v-card-text>
+          <v-text-field label="Email" required></v-text-field>
+          <v-text-field label="Password" type="password" required></v-text-field>
+          <v-text-field label="Nickname"></v-text-field>
+          <small>*indicates required field</small>
+        </v-card-text>
+      </v-flex>
 
-      </v-layout>
-    </v-card-row>
+    </v-layout>
 
     <v-card-row actions>
       <v-btn class="blue--text darken-1" flat @click.native="$emit('dialogClosed')">Close</v-btn>
@@ -50,18 +42,25 @@ export default {
   name: 'userProfile',
   data () {
     return {
-      // msg: 'Welcome to Your Vue.js App'
+      isAvatarHoverShowed: false,
+      currentUser: {
+        displayName: '',
+        email: '',
+        emailVerified: false,
+        photoURL: ''
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-/*Here just fixing margin/padding for layout in dialog*/
+/*Here just setting max height and fixing margin/padding for layout in dialog*/
 .layout {
   max-height: calc(90vh - 56px);
   margin-left: 0px;
   margin-right: 0px;
+  overflow-y: auto;
 }
 .layout > .flex {
   padding-left: 0px;
@@ -69,42 +68,95 @@ export default {
 }
 
 
-/*Avatar image fitiing and max-height = 30% of scrollable part of dialog*/
+/*Avatar image fitting and max-height = 30% of scrollable part of dialog*/
 .layout > .flex img {
-  height: 300px;
-  max-height: calc(0.3*(90vh - 56px));
-  object-fit: cover;
   width: 100%;
-  border-top-left-radius: 2px;
-  /*border-top-right-radius: 2px;*/
+  height: 100%;
+  object-fit: cover;
 }
-/*Avatar's borders*/
+  /*Avatar's borders*/
+/*In single column mode*/
 @media(max-width: 600px) {
   .layout > .flex img {
+    border-top-left-radius: 2px;
     border-top-right-radius: 2px;
+    max-height: calc(0.4 * (90vh - 56px));
   }
 }
+/*In two columns mode*/
 @media(min-width: 600px) {
+  .layout > .flex:first-of-type {
+    padding-top: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    /*Need to compensate something. Dont know what and why, but need*/
+    padding-bottom: 4px;
+  }
   .layout > .flex img {
-    border-bottom-right-radius: 4px;
-    /*In two columns mode no more need of max-height.
-    It will be equal to heit of another column*/
-    max-height: none;
+    border-radius: 4px;
   }
 }
 
 
-/*Right column padding and margin fixes*/
-.column-sm > .flex > .card__text {
+/*.card__text vertical padding and margin fixes*/
+.flex > .card__text {
+  padding-top: 0px;
   padding-bottom: 0px;
-  margin-bottom: -16px;
 }
-.column-sm > .flex > .card__text > .input-group:last-child {
+.flex > .card__text > .input-group:last-of-type {
   margin-bottom: 0px;
 }
-/*@media only screen and (min-width: 600px) {
-  .flex > .card__text > .input-group:first-child {
-    margin-top: 0px;
+.flex > .card__text > .input-group:first-of-type {
+  margin-top: 0px;
+}
+
+
+/*Avater hover styling*/
+#avatarHover {
+  pointer-events: none; /*to prevent blinking*/
+  position: absolute;
+  min-height: 40px;
+  height: 15%;
+  text-align: center;
+  background: rgba(0,0,0,.25);
+  font-weight: 300;
+  font-size: medium;
+  text-transform: uppercase;
+}
+/*In single column mode*/
+@media(max-width: 600px) {
+  #avatarHover {
+    width: 100%;
+    bottom: 6px; /*avatar's "strange" bottom padding*/
   }
-}*/
+}
+/*In two columns mode*/
+@media(min-width: 600px) {
+  #avatarHover {
+    width: calc(100% - 32px); /* 16 right and left padding*/
+    bottom: 4px; /*avatar's "strange" bottom padding*/
+  }
+}
+/*For text y-axis centring*/
+#avatarHover > .white--text {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 50%;
+}
+
+
+/*Avatar hover animation*/
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
+}
 </style>

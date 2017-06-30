@@ -3,14 +3,14 @@
   <v-app>
 
     <v-toolbar class="primary" light>
-      <v-btn icon light small class="hidden-sm-and-down" />
+      <!-- <v-btn icon light small class="hidden-sm-and-down" /> -->
 
       <v-btn icon light large @click.native="manualRoute('Explore')">
         <img style="width: 28px;" src="./assets/logoIcon.svg">
       </v-btn>
 
       <v-toolbar-title style="padding-left: 0;">AniTreasure<span class="hidden-md-and-down"> - anime pictures for soul</span></v-toolbar-title>
-      <v-spacer class="hidden-sm-and-up"></v-spacer>
+      <!-- <v-spacer class="hidden-sm-and-up"></v-spacer> -->
 
       <v-toolbar-items>
         <v-toolbar-item disabled class="hidden-xs-only">By Ddovgal</v-toolbar-item>
@@ -32,14 +32,20 @@
         </v-btn>
       </a>
 
-      <v-dialog persistent scrollable hide-overlay v-model="dialogIsOpened" width="90%">
-        <v-btn icon light slot="activator">
-          <v-icon>person</v-icon>
+      <v-dialog persistent hide-overlay v-model="dialogIsOpened" :width="isLogged ? '90%' : '350px'">
+        <v-btn v-if="isLogged" light icon slot="activator" style="margin-left: 12px;">
+          <img style="width: 32px; border-radius: 16px;" :src="currentUser.photoUrl || 'static/noUser.png'">
         </v-btn>
+        <v-btn v-else light flat class="btn--light-flat-focused" slot="activator">
+        <!-- <v-btn v-else light flat slot="activator" style="margin-right: -12px;"> -->
+        <!-- <v-btn v-else light flat slot="activator" style="margin-right: -12px; margin-left: -2px"> -->
+          <v-icon light>exit_to_app</v-icon>&nbsp;Login
+        </v-btn>
+
         <component :is="dialogComponent" @dialogClosed="dialogIsOpened = false"/>
       </v-dialog>
 
-      <v-btn icon light class="hidden-sm-and-down" />
+      <!-- <v-btn icon light class="hidden-sm-and-down" /> -->
     </v-toolbar>
 
     <main>
@@ -81,15 +87,25 @@ export default {
   },
   data () {
     return {
+      // set isLogged to false
+      isLogged: true,
+      // set currentUser to null
+      currentUser: {
+        photoURL: 'https://avatars0.githubusercontent.com/u/11231875?v=3&s=460'
+      },
+      emptyUser: {
+        displayName: '',
+        email: '',
+        emailVerified: false,
+        photoURL: ''
+      },
       dialogIsOpened: false,
       selectedNavButton: ''
     }
   },
   computed: {
     dialogComponent () {
-      // todo
-      // return logged ? 'user-profile' : 'logInUp'
-      return 'user-profile'
+      return this.isLogged ? 'user-profile' : 'logInUp'
     }
   },
   methods: {
@@ -100,13 +116,32 @@ export default {
       this.selectedNavButton = name
     }
   },
-  // useing for setting active button on first interact
   mounted () {
+    // useing for setting active button on first interact
     const path = this.$route.path
     this.selectedNavButton = path.charAt(1).toUpperCase() + path.slice(2) || 'Explore'
+
+    // firebase auth listener
+    const vm = this
+    this.$firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        vm.isLogged = true
+        vm.currentUser.displayName = user.displayName
+        vm.currentUser.email = user.email
+        vm.currentUser.emailVerified = user.emailVerified
+        vm.currentUser.photoURL = user.photoURL
+      } else {
+        vm.isLogged = false
+        vm.currentUser = vm.emptyUser
+      }
+    })
   }
 }
 </script>
+
+<style lang="stylus">
+@import './stylus/main'
+</style>
 
 <style>
 /*Dialog's default width is 90%. But need to set max-width.
@@ -123,7 +158,7 @@ Its 90vh(because dialog's max-height=90%) - 56px(height of bottom action card__r
 }
 
 
-toolbar {
+.toolbar {
   height: 48px;
   font-weight: 300;
 }

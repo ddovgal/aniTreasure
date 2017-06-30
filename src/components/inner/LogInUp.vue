@@ -1,42 +1,26 @@
 <template>
   <v-card>
     <v-card-row>
-      <v-layout wrap>
-
-        <v-flex xs sm6>
-          <img src="http://images.sciencetimes.com/data/images/full/2142/dark-matter.jpg"/>
-        </v-flex>
-
-        <v-flex xs sm6>
-          <v-layout column-sm wrap>
-            <v-flex xs12>
-              <v-card-title>logInUp</v-card-title>
-            </v-flex>
-            <v-flex xs12>
-              <v-card-text>
-                <v-text-field label="Email" required></v-text-field>
-                <v-text-field label="Password" type="password" required></v-text-field>
-                <v-text-field label="Nickname" required></v-text-field>
-              </v-card-text>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-
-        <v-flex xs>
-          <v-card-text>
-            <v-text-field label="Legal middle name" hint="example of helper text only on focus"></v-text-field>
-            <v-text-field label="Legal last name" hint="example of persistent helper text" persistent-hint required></v-text-field>
-            <v-select label="Age" required :items="['0-17', '18-29', '30-54', '54+']"></v-select>
-            <small>*indicates required field</small>
-          </v-card-text>
-        </v-flex>
-
-      </v-layout>
+      <v-card-title>Enter your credentials</v-card-title>
+    </v-card-row>
+    <v-card-row>
+      <v-card-text>
+        <v-text-field label="Email" required v-model="email"></v-text-field>
+        <v-text-field label="Password" type="password" required v-model="password"></v-text-field>
+        <small>*indicates required field</small>
+      </v-card-text>
+    </v-card-row>
+    <v-card-row v-show="errorMessage" id="errors">
+      <v-card-text>
+        <small><div class="red--text" v-html="errorMessage"></div></small>
+      </v-card-text>
     </v-card-row>
 
     <v-card-row actions>
-      <v-btn class="blue--text darken-1" flat @click.native="dialog = false">Close</v-btn>
-      <v-btn class="blue--text darken-1" flat @click.native="dialog = false">Save</v-btn>
+      <v-btn class="blue--text darken-1" flat @click.native="logIn">Log in</v-btn>
+      <v-btn class="blue--text darken-1" flat @click.native="signUp">Sign up</v-btn>
+      <v-spacer/>
+      <v-btn class="blue--text darken-1" flat @click.native="$emit('dialogClosed')">Close</v-btn>
     </v-card-row>
 
   </v-card>
@@ -47,43 +31,84 @@ export default {
   name: 'logInUp',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      email: '',
+      password: '',
+      errorMessage: ''
+    }
+  },
+  methods: {
+    checkInputDataCorrectness () {
+      let isAllOk = true
+      const noEmailMessage = 'Please enter an email address'
+      const noPasswordMessage = 'Please enter a password'
+
+      if (this.email.length < 5) {
+        this.errorMessage = noEmailMessage
+        isAllOk = false
+      }
+      if (this.password.length < 4) {
+        this.errorMessage += '<br>' + noPasswordMessage
+        isAllOk = false
+      }
+
+      return isAllOk
+    },
+    logIn () {
+      if (!this.checkInputDataCorrectness()) return
+
+      const vm = this
+      this.$firebase.auth().signInWithEmailAndPassword(vm.email, vm.password).catch((error) => {
+        const errorCode = error.code
+        switch (errorCode) {
+          case 'auth/invalid-email':
+            vm.errorMessage = 'Email address is not valid'
+            break
+          case 'auth/user-disabled':
+            vm.errorMessage = 'User corresponding to the given email has been disabled'
+            break
+          case 'auth/user-not-found':
+            vm.errorMessage = 'There is no user corresponding to the given email'
+            break
+          case 'auth/wrong-password':
+            vm.errorMessage = 'Password is invalid for the given email, or the account corresponding to the email does not have a password set'
+        }
+      })
+    },
+    signUp () {
+      if (!this.checkInputDataCorrectness()) return
+
+      const vm = this
+      this.$firebase.auth().createUserWithEmailAndPassword(vm.email, vm.password).then((user) => {
+        user.sendEmailVerification()
+      }).catch((error) => {
+        const errorCode = error.code
+        switch (errorCode) {
+          case 'auth/email-already-in-use':
+          case 'auth/operation-not-allowed':
+            vm.errorMessage = 'Account with the given email address is already exists'
+            break
+          case 'auth/invalid-email':
+            vm.errorMessage = 'Please enter a valid email address'
+            break
+          case 'auth/weak-password':
+            vm.errorMessage = 'Please enter a stronger password'
+        }
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-/*Here just fixing margin/padding for layout in dialog*/
-.layout {
-  max-height: calc(90vh - 56px);
-  margin-left: 0px;
-  margin-right: 0px;
+/*.card__text vertical padding and margin fixes*/
+.card__text > .input-group:last-of-type {
+  margin-bottom: 0px;
 }
-.layout > .flex {
-  padding-left: 0px;
-  padding-right: 0px;
+.card__text > .input-group:first-of-type {
+  margin-top: 0px;
 }
-
-
-/*Avatar image fitiing and max-height = 30% of scrollable part of dialog*/
-.layout > .flex img {
-  height: 300px;
-  max-height: calc(0.3*(90vh - 56px));
-  object-fit: cover;
-  width: 100%;
-  border-top-left-radius: 2px;
-  /*border-top-right-radius: 2px;*/
-}
-/*Avatar's borders*/
-@media(max-width: 600px) {
-  .layout > .flex img {
-    border-top-right-radius: 2px;
-  }
-}
-@media(min-width: 600px) {
-  .layout > .flex img {
-    border-bottom-right-radius: 4px;
-  }
+#errors > .card__text {
+  padding-top: 0px;
+  /*padding-bottom: 0px;*/
 }
 </style>
