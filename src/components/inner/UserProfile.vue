@@ -3,9 +3,10 @@
     <v-layout wrap>
 
       <v-flex xs sm6 style="position: relative;">
-        <img :src="currentUser.photoUrl || 'static/noUser.png'"
+        <img :src="editableUserData.avatarData || 'static/noUser.png'"
         @mouseover="isAvatarHoverShowed = true"
-        @mouseout="isAvatarHoverShowed = false"/>
+        @mouseout="isAvatarHoverShowed = false"
+        @click="changeAvatar"/>
         <transition name="fade" mode="out-in" appear>
           <div v-show="isAvatarHoverShowed" id="avatarHover">
             <div class="white--text">Change picture</div>
@@ -20,18 +21,25 @@
         </v-card-title>
 
         <v-card-text>
-          <v-text-field label="Email" required></v-text-field>
-          <v-text-field label="Password" type="password" required></v-text-field>
-          <v-text-field label="Nickname"></v-text-field>
-          <small>*indicates required field</small>
+          <v-text-field label="Email" disabled :value="auth.user.email"></v-text-field>
+          <v-text-field label="Password" type="password" ref="passwordField" v-model="editableUserData.password"></v-text-field>
+          <v-text-field label="Nickname" ref="nicknameField" v-model="editableUserData.nickname"></v-text-field>
+        </v-card-text>
+
+        <v-card-text v-show="errorMessage" id="errors">
+          <small><div class="red--text" v-html="errorMessage"></div></small>
         </v-card-text>
       </v-flex>
 
     </v-layout>
 
     <v-card-row actions>
-      <v-btn class="blue--text darken-1" flat @click.native="$emit('dialogClosed')">Close</v-btn>
-      <v-btn class="blue--text darken-1" flat @click.native="$emit('dialogClosed')">Save</v-btn>
+      <v-btn v-if="auth.user.isEmailVerified" class="blue--text darken-1" flat @click.native="updateProfile">Update</v-btn>
+      <v-btn v-else class="blue--text darken-1" flat @click.native="sendVerificationMail">Send verification mail</v-btn>
+      <!-- <v-btn class="blue--text darken-1" flat @click.native="deleteAccount">Delete account</v-btn> -->
+      <v-btn class="blue--text darken-1" flat @click.native="logout">Logout</v-btn>
+      <v-spacer/>
+      <v-btn class="blue--text darken-1" flat @click.native="close">Close</v-btn>
     </v-card-row>
 
   </v-card>
@@ -40,16 +48,44 @@
 <script>
 export default {
   name: 'userProfile',
+  props: {
+    auth: Object
+  },
   data () {
     return {
       isAvatarHoverShowed: false,
-      currentUser: {
-        displayName: '',
-        email: '',
-        emailVerified: false,
-        photoURL: ''
-      }
+      editableUserData: {
+        nickname: '',
+        password: '',
+        avatarData: ''
+      },
+      errorMessage: ''
     }
+  },
+  methods: {
+    close () {
+      this.editableUserData.password = ''
+      this.$refs.passwordField.hasFocused = false
+      this.editableUserData.nickname = ''
+      this.$refs.nicknameField.hasFocused = false
+      this.editableUserData.avatarData = ''
+      this.errorMessage = ''
+      this.$emit('dialogClosed')
+    },
+    changeAvatar () {
+
+    },
+    updateProfile () {
+
+    },
+    logout () {
+      this.$firebase.auth().signOut()
+      this.$emit('dialogClosed')
+    }
+  },
+  created () {
+    this.editableUserData.nickname = this.$props.auth.user.nickname
+    this.editableUserData.avatarData = this.$props.auth.user.avatarURL
   }
 }
 </script>
@@ -100,7 +136,7 @@ export default {
 
 /*.card__text vertical padding and margin fixes*/
 .flex > .card__text {
-  padding-top: 0px;
+  /*padding-top: 0px;*/
   padding-bottom: 0px;
 }
 .flex > .card__text > .input-group:last-of-type {
@@ -108,6 +144,10 @@ export default {
 }
 .flex > .card__text > .input-group:first-of-type {
   margin-top: 0px;
+}
+#errors {
+  padding-top: 0px;
+  /*padding-bottom: 0px;*/
 }
 
 

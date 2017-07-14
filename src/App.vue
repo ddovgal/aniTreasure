@@ -1,8 +1,7 @@
 <template>
-<div id="app">
   <v-app>
 
-    <v-toolbar class="primary" light>
+    <v-toolbar class="primary" light fixed>
       <!-- <v-btn icon light small class="hidden-sm-and-down" /> -->
 
       <v-btn icon light large @click.native="manualRoute('Explore')">
@@ -32,9 +31,9 @@
         </v-btn>
       </a>
 
-      <v-dialog persistent hide-overlay v-model="dialogIsOpened" :width="isLogged ? '90%' : '350px'">
-        <v-btn v-if="isLogged" light icon slot="activator" style="margin-left: 12px;">
-          <img style="width: 32px; border-radius: 16px;" :src="currentUser.photoUrl || 'static/noUser.png'">
+      <v-dialog persistent v-model="isDialogOpened" :width="auth.isAuthenticated ? '90%' : '350px'">
+        <v-btn v-if="auth.isAuthenticated" light icon slot="activator" style="margin-left: 12px;">
+          <img style="width: 32px; border-radius: 16px;" :src="auth.user.avatarURL || 'static/noUser.png'">
         </v-btn>
         <v-btn v-else light flat class="btn--light-flat-focused" slot="activator">
         <!-- <v-btn v-else light flat slot="activator" style="margin-right: -12px;"> -->
@@ -42,7 +41,7 @@
           <v-icon light>exit_to_app</v-icon>&nbsp;Login
         </v-btn>
 
-        <component :is="dialogComponent" @dialogClosed="dialogIsOpened = false"/>
+        <component :is="dialogComponent" :auth="auth" @dialogClosed="isDialogOpened = false"/>
       </v-dialog>
 
       <!-- <v-btn icon light class="hidden-sm-and-down" /> -->
@@ -72,7 +71,6 @@
     </v-bottom-nav>
 
   </v-app>
-</div>
 </template>
 
 <script>
@@ -87,25 +85,22 @@ export default {
   },
   data () {
     return {
-      // set isLogged to false
-      isLogged: true,
-      // set currentUser to null
-      currentUser: {
-        photoURL: 'https://avatars0.githubusercontent.com/u/11231875?v=3&s=460'
+      auth: {
+        isAuthenticated: false,
+        user: {
+          nickname: '',
+          email: '',
+          isEmailVerified: false,
+          avatarURL: ''
+        }
       },
-      emptyUser: {
-        displayName: '',
-        email: '',
-        emailVerified: false,
-        photoURL: ''
-      },
-      dialogIsOpened: false,
+      isDialogOpened: false,
       selectedNavButton: ''
     }
   },
   computed: {
     dialogComponent () {
-      return this.isLogged ? 'user-profile' : 'logInUp'
+      return this.auth.isAuthenticated ? 'user-profile' : 'logInUp'
     }
   },
   methods: {
@@ -125,14 +120,17 @@ export default {
     const vm = this
     this.$firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        vm.isLogged = true
-        vm.currentUser.displayName = user.displayName
-        vm.currentUser.email = user.email
-        vm.currentUser.emailVerified = user.emailVerified
-        vm.currentUser.photoURL = user.photoURL
+        vm.auth.isAuthenticated = true
+        vm.auth.user.nickname = user.displayName || ''
+        vm.auth.user.email = user.email
+        vm.auth.user.isEmailVerified = user.emailVerified
+        vm.auth.user.avatarURL = user.photoURL || ''
       } else {
-        vm.isLogged = false
-        vm.currentUser = vm.emptyUser
+        vm.auth.isAuthenticated = false
+        vm.auth.user.nickname = ''
+        vm.auth.user.email = ''
+        vm.auth.user.isEmailVerified = false
+        vm.auth.user.avatarURL = ''
       }
     })
   }
@@ -144,6 +142,20 @@ export default {
 </style>
 
 <style>
+/*Main part(between top and bottom bars) must be always 100% of width,
+even when dialog is shown. But he sets 17 padding right to all <html>,
+so need manually set 100% of width to main part*/
+/*main {
+  width: 100vw;
+}*/
+/*All must be always 100% of width, even when dialog is shown.
+But he sets 17 padding right to all <html>, so need manually rewrite
+padding-right to all <html> with !important*/
+html {
+  padding-right: 0 !important
+}
+
+
 /*Dialog's default width is 90%. But need to set max-width.
 So its 90%, but not more than 600px*/
 .dialog:not(.dialog--fullscreen) {

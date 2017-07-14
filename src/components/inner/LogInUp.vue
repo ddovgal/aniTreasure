@@ -5,9 +5,14 @@
     </v-card-row>
     <v-card-row>
       <v-card-text>
-        <v-text-field label="Email" required v-model="email"></v-text-field>
-        <v-text-field label="Password" type="password" required v-model="password"></v-text-field>
-        <small>*indicates required field</small>
+        <v-text-field label="Email" required ref="emailField" v-model="email"></v-text-field>
+        <v-text-field label="Password" type="password" required ref="passwordField" v-model="password"></v-text-field>
+        <small>
+          <div style="position: relative;">
+            *indicates required field
+            <a style="position: absolute; right: 0px;" href="#" @click.prevent="forgotPassword">I forgot password</a>
+          </div>
+        </small>
       </v-card-text>
     </v-card-row>
     <v-card-row v-show="errorMessage" id="errors">
@@ -19,8 +24,9 @@
     <v-card-row actions>
       <v-btn class="blue--text darken-1" flat @click.native="logIn">Log in</v-btn>
       <v-btn class="blue--text darken-1" flat @click.native="signUp">Sign up</v-btn>
+      <!-- <v-btn class="blue--text darken-1" flat @click.native="forgotPassword">Forgot password</v-btn> -->
       <v-spacer/>
-      <v-btn class="blue--text darken-1" flat @click.native="$emit('dialogClosed')">Close</v-btn>
+      <v-btn class="blue--text darken-1" flat @click.native="close">Close</v-btn>
     </v-card-row>
 
   </v-card>
@@ -37,11 +43,39 @@ export default {
     }
   },
   methods: {
+    close () {
+      this.email = ''
+      this.$refs.emailField.hasFocused = false
+      this.password = ''
+      this.$refs.passwordField.hasFocused = false
+      this.errorMessage = ''
+      this.$emit('dialogClosed')
+    },
+    forgotPassword () {
+      if (this.email) {
+        const vm = this
+        this.$firebase.auth().sendPasswordResetEmail(this.email).then(() => {
+          vm.errorMessage = 'Password reset email sent'
+        }).catch((error) => {
+          const errorCode = error.code
+          switch (errorCode) {
+            case 'auth/invalid-email':
+              vm.errorMessage = 'Email address is not valid'
+              break
+            case 'auth/user-not-found':
+              vm.errorMessage = 'There is no user corresponding to the given email'
+          }
+        })
+      } else {
+        this.errorMessage = 'Please enter an email address'
+      }
+    },
     checkInputDataCorrectness () {
       let isAllOk = true
       const noEmailMessage = 'Please enter an email address'
       const noPasswordMessage = 'Please enter a password'
 
+      this.errorMessage = ''
       if (this.email.length < 5) {
         this.errorMessage = noEmailMessage
         isAllOk = false

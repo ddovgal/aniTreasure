@@ -3,12 +3,13 @@ export default {
     processImages
   }
 }
+export { processImage }
 
 function processImages (files) {
   var imageNames = []
   var resizedImages = [];
 
-  [...files].forEach((item) => processImage(item, imageNames, resizedImages))
+  [...files].forEach((item) => processImage(item, 0, 0, resizedImages, imageNames))
 
   return {
     imageNames,
@@ -16,7 +17,7 @@ function processImages (files) {
   }
 }
 
-function processImage (file, imageNames, resizedImages) {
+function processImage (file, maxHeight, maxWidth, resizedImages = null, imageNames = null) {
   // read the file
   var reader = new FileReader()
   reader.readAsArrayBuffer(file)
@@ -32,16 +33,23 @@ function processImage (file, imageNames, resizedImages) {
     image.src = blobURL
     image.onload = function () {
       // have to wait till it's loaded
-      resizedImages.push(resizeMe(image))
-      imageNames.push(file.name)
+      if (resizedImages) {
+        // if working with arrays
+        resizedImages.push(resizeMe(image))
+        imageNames.push(file.name)
+      } else {
+        // if using method with single file
+        var resizedImageData = resizeMe(image, maxHeight, maxWidth)
+        return {
+          name: file.name,
+          data: resizedImageData
+        }
+      }
     }
   }
 }
 
-const maxHeight = 900
-const maxWidth = 16 / 7 * maxHeight
-
-function resizeMe (img) {
+function resizeMe (img, maxHeight = 900, maxWidth = 16 / 7 * maxHeight) {
   var canvas = document.createElement('canvas')
 
   var width = img.width

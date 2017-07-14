@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 // Initialize Firebase
 const config = {
   apiKey: 'AIzaSyDaGX_xuvvh0LeqNNLcWgmWmYitr0XwN3Q',
-  authDomain: 'anitreasure-fa2ca.firebaseapp.com',
+  authDomain: 'anitreasure.tk',
   databaseURL: 'https://anitreasure-fa2ca.firebaseio.com',
   projectId: 'anitreasure-fa2ca',
   storageBucket: 'anitreasure-fa2ca.appspot.com',
